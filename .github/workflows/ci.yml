@@ -1,48 +1,13 @@
-#Description
-name: Auto Merge Images from user-branch to main
+name: CI Pipeline
 
-# from where the action
-on:
-  push: # when push happend 
-    branches:
-      - user-* # From all branches of users
-      
-# What action to do
+on: [push]
+    
 jobs:
-  merge:
-    runs-on: ubuntu-latest #I assumed it run on ubuntu
-
+  build:    # job ID
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout user-branch
-    # clone from branch that did the push
-      uses: actions/checkout@v3
-
-    - name: Fetch origin/main
-    # import the updated main files
-      run: |
-        git fetch origin main 
-
-    # only names of files that has ending of jpg/jpeg/png, cmpare origin and main
-    - name: Check for image file changes in full diff from main
-      run: |
-        git diff --name-only origin/main...HEAD | grep -Ei '\.(jpg|jpeg|png)$' || {
-          exit 0
-        }
-
-    - name: Checkout main branch
-      # use a random email and user name for github, and move to main branch - can't merge to main withou git commit
-      run: |
-        git config --global user.name "AutoMerger"
-        git config --global user.email "automerge@yourdomain.com"
-        git checkout main
-
-      # merge origin=user-branch into main + if in merge has conflict, we use "theirs" to prefer the user-branch, true helps avoid failier to nothing
-    - name: Merge user-branch into main
-      run: |
-        git fetch origin ${{ github.ref_name }}
-        git merge -X theirs origin/${{ github.ref_name }} --allow-unrelated-histories --no-edit || true
-
-    # push changes to main, if their is - print
-    - name: Push merged changes to main
-      run: |
-        git push origin main || echo "No merge was needed"
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Run a sample command
+        run: echo "Hello from CI!"
