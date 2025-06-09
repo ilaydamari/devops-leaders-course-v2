@@ -1,4 +1,0 @@
-google-cloud-storage
-flask
-opencv-python
-numpy
